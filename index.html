@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AMVIN Report</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #9b30b6;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .container {
+        position: relative;
+        width: 80vw;
+        height: 80vh;
+      }
+      .title {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-family: Arial, sans-serif;
+        font-size: 24px;
+        color: #ffffff; 
+      }
+      img {
+        width: 200px;
+        height: 50px;
+      } 
+
+      .circle {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        background-color: #e6e6e6;
+        border: 10px solid #1a0066;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        color: #1a0066;
+        font-size: 16px;
+        text-align: center;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .circle:hover {
+        transform: scale(1.1);
+      }
+
+      .center {
+        top: 40%;
+        left: 40%;
+      }
+      .top-left {
+        top: 10%;
+        left: 10%;
+      }
+      .top-right {
+        top: 10%;
+        right: 10%;
+      }
+      .bottom-left {
+        bottom: 10%;
+        left: 10%;
+      }
+      .bottom-right {
+        bottom: 10%;
+        right: 10%;
+      }
+      .switch{
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+      }
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      
+      /* The slider */
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+      .switch input:checked + .slider {
+        background-color: #2196F3;
+      } 
+      input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+      }
+
+      input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+      }
+
+      /* Quick Form Button */
+      .quick-form-btn {
+        position: absolute;
+        top: 70px;
+        left: 20px;
+        background-color: #ff6b35;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .quick-form-btn:hover {
+        background-color: #e55a2b;
+      }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+      }
+
+      .modal-content {
+        background-color: #fff;
+        margin: 2% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+      }
+
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        right: 15px;
+        top: 10px;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      /* Form styles inside modal */
+      .modal h2 {
+        text-align: center;
+        font-size: 20px;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        border-bottom: 1px dashed #aaa;
+        padding-bottom: 10px;
+        color: #333;
+      }
+
+      .modal label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 4px;
+        font-size: 14px;
+        color: #333;
+      }
+
+      .modal input[type="text"],
+      .modal input[type="number"],
+      .modal input[type="date"],
+      .modal input[type="datetime-local"],
+      .modal select {
+        width: 100%;
+        padding: 8px 10px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+
+      .modal input[readonly] {
+        background-color: #f0f0f0;
+        cursor: not-allowed;
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .modal button {
+        flex: 1;
+        padding: 12px;
+        font-size: 15px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: background-color 0.2s ease;
+      }
+
+      .submit-btn {
+        background-color: #28a745;
+        color: white;
+      }
+
+      .submit-btn:hover {
+        background-color: #218838;
+      }
+
+      .cancel-btn {
+        background-color: #6c757d;
+        color: white;
+      }
+
+      .cancel-btn:hover {
+        background-color: #5a6268;
+      }
+
+      @media screen and (max-width: 1024px) {
+  .container {
+    width: 90vw;
+    height: 90vh;
+  }
+
+  .circle {
+    width: 100px;
+    height: 100px;
+    font-size: 14px;
+  }
+
+  .title img {
+    width: 160px;
+    height: 40px;
+  }
+
+  .quick-form-btn {
+    font-size: 12px;
+    padding: 10px 16px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .circle {
+    width: 90px;
+    height: 90px;
+    font-size: 13px;
+  }
+
+  .container {
+    flex-direction: column;
+    width: 95vw;
+    height: 95vh;
+  }
+
+  .title {
+    font-size: 20px;
+    right: 10px;
+  }
+
+  .title img {
+    width: 140px;
+    height: 35px;
+  }
+
+  .quick-form-btn {
+    top: 60px;
+    left: 10px;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .modal h2 {
+    font-size: 18px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .circle {
+    width: 80px;
+    height: 80px;
+    font-size: 12px;
+  }
+
+  .title img {
+    width: 120px;
+    height: 30px;
+  }
+
+  .quick-form-btn {
+    font-size: 11px;
+    padding: 8px 14px;
+  }
+
+  .modal-content {
+    padding: 12px;
+    width: 98%;
+  }
+
+  .modal input,
+  .modal select {
+    font-size: 13px;
+    padding: 6px 8px;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+  }
+
+  .modal button {
+    font-size: 14px;
+  }
+}
+
+    </style>
+  </head>
+  <body>
+    <div class="switch-container" style="position: absolute; top: 20px; left: 20px;">
+      <label class="switch">
+        <input type="checkbox" id="toggleSwitch" value="status">
+        <span class="slider"></span>
+      </label>
+    </div>
+    
+    <button class="quick-form-btn" onclick="openModal()">Quick Form</button>
+    
+    <div class="title">
+      <img src="WhatsApp Image 2025-06-25 at 13.29.38_5f98bc94.jpg" alt="Logo"/>
+    </div>
+    <div class="container">
+      <div class="circle top-left" onclick="location.href='reprocess.html'">
+        Reprocess
+      </div>
+      <div class="circle top-right">Sanitize</div>
+      <div class="circle center">Chemical</div>
+      <div class="circle bottom-left">Repair</div>
+      <a href="Report_form.html"><div class="circle bottom-right">Details</div></a>
+    </div>
+
+    <!-- Modal -->
+    <div id="formModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Quick Dialyzer Form</h2>
+        
+        <label>Date & Time</label>
+        <input type="datetime-local" id="modalDateTime">
+
+        <label>Station</label>
+        <select id="modalStation">
+          <option value="">Select</option>
+          <option value="Station 1">Station 1</option>
+          <option value="Station 2">Station 2</option>
+        </select>
+
+        <label>Dialyzer Type</label>
+        <select id="modalDialyzerType">
+          <option value="">Select</option>
+          <option value="F08">F08</option>
+          <option value="F06">F06</option>
+        </select>
+
+        <label>Fiber Bundle Volume (TBV)</label>
+        <input type="text" id="modalTbv" readonly>
+
+        <label>Pressure Leak Test</label>
+        <input type="text" id="modalPressureLeakTest" readonly>
+
+        <label>Blood Leak Test</label>
+        <input type="text" id="modalBloodLeakTest" value="POSITIVE">
+
+        <label>Tech Name</label>
+        <input type="text" id="modalTechName">
+
+        <label>Tech ID</label>
+        <input type="text" id="modalTechID">
+
+        <label>Patient Name</label>
+        <input type="text" id="modalPatientName">
+
+        <label>Patient ID</label>
+        <input type="text" id="modalPatientID">
+
+        <label>Previous Uses</label>
+        <input type="number" id="modalPreviousUses">
+
+        <label>Reprocessing Number</label>
+        <input type="number" id="modalReprocessingNo">
+
+        <label>Storage Date</label>
+        <input type="date" id="modalStorageDate">
+
+        <label>Next Due Date</label>
+        <input type="date" id="modalNextDueDate">
+
+        <label>Final Rinse</label>
+        <input type="text" id="modalFinalRinse" value="Ready for Use" readonly>
+
+        <label>Storage Result</label>
+        <input type="text" id="modalStorageResult" value="SUCCESSFUL" readonly>
+
+        <div class="modal-buttons">
+          <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+          <button class="submit-btn" onclick="submitForm()">Submit & Go to Reprocess</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Initialize modal form when DOM loads
+      document.addEventListener('DOMContentLoaded', () => {
+        initializeModalForm();
+      });
+
+      function initializeModalForm() {
+        const now = new Date();
+        document.getElementById('modalDateTime').value = now.toISOString().slice(0, 16);
+        document.getElementById('modalStorageDate').value = now.toISOString().slice(0, 10);
+        const nextDue = new Date(now);
+        nextDue.setDate(now.getDate() + 3);
+        document.getElementById('modalNextDueDate').value = nextDue.toISOString().slice(0, 10);
+
+        const stationSelect = document.getElementById('modalStation');
+        const dialyzerSelect = document.getElementById('modalDialyzerType');
+
+        function updateDefaults() {
+          if (stationSelect.value && dialyzerSelect.value) {
+            document.getElementById('modalTbv').value = (Math.random() * (90 - 85) + 85).toFixed(1) + ' mL';
+            document.getElementById('modalPressureLeakTest').value = 'PASS';
+          }
+        }
+
+        stationSelect.addEventListener('change', updateDefaults);
+        dialyzerSelect.addEventListener('change', updateDefaults);
+      }
+
+      function openModal() {
+        document.getElementById('formModal').style.display = 'block';
+      }
+
+      function closeModal() {
+        document.getElementById('formModal').style.display = 'none';
+      }
+
+      function submitForm() {
+        // Collect form data
+        const formData = {
+          dateTime: document.getElementById('modalDateTime').value,
+          station: document.getElementById('modalStation').value,
+          dialyzerType: document.getElementById('modalDialyzerType').value,
+          tbv: document.getElementById('modalTbv').value,
+          pressureLeakTest: document.getElementById('modalPressureLeakTest').value,
+          bloodLeakTest: document.getElementById('modalBloodLeakTest').value,
+          techName: document.getElementById('modalTechName').value,
+          techID: document.getElementById('modalTechID').value,
+          patientName: document.getElementById('modalPatientName').value,
+          patientID: document.getElementById('modalPatientID').value,
+          previousUses: document.getElementById('modalPreviousUses').value,
+          reprocessingNo: document.getElementById('modalReprocessingNo').value,
+          storageDate: document.getElementById('modalStorageDate').value,
+          nextDueDate: document.getElementById('modalNextDueDate').value,
+          finalRinse: document.getElementById('modalFinalRinse').value,
+          storageResult: document.getElementById('modalStorageResult').value
+        };
+
+        // Store form data in localStorage for use in reprocess page
+        localStorage.setItem('dialyzerFormData', JSON.stringify(formData));
+        
+        // Close modal and redirect to reprocess page
+        closeModal();
+        window.location.href = 'reprocess.html';
+      }
+
+      // Close modal when clicking outside of it
+      window.onclick = function(event) {
+        const modal = document.getElementById('formModal');
+        if (event.target == modal) {
+          closeModal();
+        }
+      }
+    </script>
+  </body>
+</html>

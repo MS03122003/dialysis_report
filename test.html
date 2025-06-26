@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Dialysis Machine Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #ff1493, #ff69b4);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: auto;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Top Navigation Circles */
+        .top-nav {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-circle {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            border: 3px solid #fff;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .nav-circle:hover {
+            transform: translateY(-5px);
+        }
+
+        .nav-counter {
+            background: #ff4500;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* Tank Level Indicator */
+        .tank-level {
+            width: 20px;
+            height: 40px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .tank-fill {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(to top, #00bfff, #87ceeb);
+            border-radius: 10px;
+            transition: height 0.5s ease;
+            height: 0%;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            background: linear-gradient(135deg, #ffed4e, #ffd700);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            border: 4px solid #fff;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        /* Station Sections */
+        .station {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            min-width: 200px;
+        }
+
+        .station-header {
+            background: linear-gradient(135deg, #8a2be2, #9932cc);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            min-width: 180px;
+            text-align: center;
+        }
+
+        .station-button {
+            background: linear-gradient(135deg, #8a2be2, #9932cc);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            min-width: 160px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .station-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .station-button:active {
+            transform: translateY(0);
+        }
+
+        .station-button.completed {
+            background: linear-gradient(135deg, #32cd32, #228b22);
+        }
+
+        .tbv-button {
+            background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+            padding: 15px 25px;
+            font-size: 18px;
+        }
+
+        .tick-button {
+            background: #fff;
+            color: #32cd32;
+            border: 2px solid #32cd32;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .tick-button.visible {
+            display: flex;
+            opacity: 1;
+            transform: scale(1);
+            animation: tickAppear 0.5s ease;
+        }
+
+        @keyframes tickAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(-180deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .tick-button:hover {
+            background: #32cd32;
+            color: white;
+        }
+
+        .tick-button.ticked {
+            background: #32cd32;
+            color: white;
+            animation: tickComplete 0.6s ease;
+        }
+
+        @keyframes tickComplete {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        /* Timer Section */
+        .timer-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .timer-display {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            border: 8px solid #333;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timer-display::before {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 4px solid #333;
+            border-radius: 50%;
+            top: -18px;
+            left: -18px;
+            border-style: dashed;
+        }
+
+        .timer-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(from 0deg, #32cd32 0deg, #32cd32 0deg, transparent 0deg);
+            border-radius: 50%;
+            transition: background 0.1s ease;
+        }
+
+        .timer-text {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Bottom Controls */
+        .bottom-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-button {
+            padding: 20px 40px;
+            border: none;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            min-width: 120px;
+        }
+
+        .home-btn {
+            background: linear-gradient(135deg, #ff8c00, #ffa500);
+            color: white;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #32cd32, #228b22);
+            color: white;
+            font-size: 28px;
+            padding: 25px 50px;
+        }
+
+        .continue-btn {
+            background: linear-gradient(135deg, #ff8c00, #ffa500);
+            color: white;
+        }
+
+        .print-btn {
+            background: linear-gradient(135deg, #4169e1, #0000cd);
+            color: white;
+            margin-left: auto;
+        }
+
+        .control-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .control-button:active {
+            transform: translateY(0);
+        }
+
+        /* Timer Controls */
+        .timer-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .timer-control-btn {
+            background: linear-gradient(135deg, #ff6347, #ff4500);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .timer-control-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #32cd32;
+            display: inline-block;
+            margin-left: 10px;
+            box-shadow: 0 0 10px rgba(50, 205, 50, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .timer-running {
+            animation: timerPulse 1s infinite;
+        }
+
+        @keyframes timerPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Confirmation Dialog */
+        .confirmation-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .dialog-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .dialog-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .dialog-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dialog-btn.confirm {
+            background: #32cd32;
+            color: white;
+        }
+
+        .dialog-btn.cancel {
+            background: #ff6347;
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-circle {
+                width: 80px;
+                height: 80px;
+                font-size: 12px;
+            }
+
+            .main-content {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .timer-display {
+                width: 120px;
+                height: 120px;
+                font-size: 32px;
+            }
+
+            .control-button {
+                padding: 15px 25px;
+                font-size: 18px;
+            }
+
+            .start-btn {
+                font-size: 20px;
+                padding: 18px 35px;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            .print-content {
+                display: block;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+
+        .print-content {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Top Navigation -->
+        <div class="top-nav no-print">
+            <div class="nav-circle" onclick="accessSection('PS1')" data-section="ps1">
+                PS 1
+                <div class="nav-counter" id="ps1Counter">0</div>
+            </div>
+            <div class="nav-circle" onclick="accessSection('Chemical')" data-section="chemical">
+                Chemical
+                <div class="nav-counter" id="chemicalCounter">0</div>
+            </div>
+            <div class="nav-circle" onclick="accessSection('Tank Level')" data-section="tank">
+                Tank Level
+                <div class="tank-level">
+                    <div class="tank-fill" id="tankFill"></div>
+                </div>
+                <div class="nav-counter" id="tankCounter">0</div>
+            </div>
+            <div class="nav-circle" onclick="accessSection('Dialyzer')" data-section="dialyzer">
+                Dialyzer
+                <div class="nav-counter" id="dialyzerCounter">0</div>
+            </div>
+            <div class="nav-circle" onclick="accessSection('Process')" data-section="process">
+                Process
+                <div class="nav-counter" id="processCounter">0</div>
+            </div>
+            <div class="nav-circle" onclick="accessSection('PS2')" data-section="ps2">
+                PS 2
+                <div class="nav-counter" id="ps2Counter">0</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Station 1 -->
+            <div class="station">
+                <div class="station-header">Station 1</div>
+                <button class="station-button" data-action="bloodPortCheck1">
+                    Blood Port Check
+                    <div class="tick-button" onclick="toggleTick(this, 'bloodPortCheck1')">✓</div>
+                </button>
+                <button class="station-button" data-action="rinse1">
+                    Rinse
+                    <div class="tick-button" onclick="toggleTick(this, 'rinse1')">✓</div>
+                </button>
+                <button class="station-button" data-action="clean1">
+                    Clean
+                    <div class="tick-button" onclick="toggleTick(this, 'clean1')">✓</div>
+                </button>
+                <button class="station-button tbv-button" data-action="tbv1">
+                    TBV 1<br>TBV 1-75
+                    <div class="tick-button" onclick="toggleTick(this, 'tbv1')">✓</div>
+                </button>
+                <button class="station-button" data-action="affution1">
+                    Affution
+                    <div class="tick-button" onclick="toggleTick(this, 'affution1')">✓</div>
+                </button>
+            </div>
+
+            <!-- Timer Section -->
+            <div class="timer-section">
+                <div class="timer-display" id="timerDisplay">
+                    <div class="timer-fill" id="timerFill"></div>
+                    <div class="timer-text" id="timerText">0:00</div>
+                </div>
+                <div class="timer-controls">
+                    <button class="timer-control-btn" onclick="showResetConfirmation()">Reset</button>
+                    <button class="timer-control-btn" onclick="pauseTimer()">Pause</button>
+                </div>
+            </div>
+
+            <!-- Station 2 -->
+            <div class="station">
+                <div class="station-header">Station 2</div>
+                <button class="station-button" data-action="bloodPortCheck2">
+                    Blood Port Check
+                    <div class="tick-button" onclick="toggleTick(this, 'bloodPortCheck2')">✓</div>
+                </button>
+                <button class="station-button" data-action="rinse2">
+                    Rinse
+                    <div class="tick-button" onclick="toggleTick(this, 'rinse2')">✓</div>
+                </button>
+                <button class="station-button" data-action="clean2">
+                    Clean
+                    <div class="tick-button" onclick="toggleTick(this, 'clean2')">✓</div>
+                </button>
+                <button class="station-button tbv-button" data-action="tbv2">
+                    TBV 2<br>TBV 1-75
+                    <div class="tick-button" onclick="toggleTick(this, 'tbv2')">✓</div>
+                </button>
+                <button class="station-button" data-action="affution2">
+                    Affution
+                    <div class="tick-button" onclick="toggleTick(this, 'affution2')">✓</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Controls -->
+        <div class="bottom-controls no-print">
+            <button class="control-button home-btn"><a href="./index.html" style="text-decoration: none;">Home</a></button>
+            <button class="control-button start-btn" id="startBtn" onclick="toggleTimer()">Start</button>
+            <button class="control-button continue-btn" onclick="continueProcess()">Continue</button>
+            <button class="control-button print-btn" onclick="printReport()">Print Report</button>
+        </div>
+    </div>
+
+    <!-- Confirmation Dialog -->
+    <div class="confirmation-dialog" id="confirmationDialog">
+        <div class="dialog-content">
+            <h3 id="dialogTitle">Confirm Action</h3>
+            <p id="dialogMessage">Are you sure you want to proceed?</p>
+            <div class="dialog-buttons">
+                <button class="dialog-btn confirm" onclick="confirmAction()">Yes</button>
+                <button class="dialog-btn cancel" onclick="cancelAction()">No</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Content (Hidden) -->
+    <div class="print-content">
+        <h1>Dialysis Machine Report</h1>
+        <hr>
+        
+        <!-- Patient Information from Quick Form -->
+        <div id="patientInfo">
+            <h2>Patient Information</h2>
+            <div id="printPatientDetails"></div>
+        </div>
+        <hr>
+        
+        <!-- Session Information -->
+        <div id="sessionInfo">
+            <h2>Session Information</h2>
+            <p><strong>Date:</strong> <span id="printDate"></span></p>
+            <p><strong>Time:</strong> <span id="printTime"></span></p>
+            <p><strong>Session Duration:</strong> <span id="printDuration"></span></p>
+            <p><strong>Timer Status:</strong> <span id="printTimerStatus"></span></p>
+        </div>
+        <hr>
+        
+        <!-- Station Status -->
+        <div id="stationStatus">
+            <h2>Station Status</h2>
+            <div id="printStationStatus"></div>
+        </div>
+        <hr>
+        
+        <!-- Process Log -->
+        <div id="processLog">
+            <h2>Process Log</h2>
+            <div id="printProcessLog"></div>
+        </div>
+    </div>
+
+    <script>
+        let timerInterval;
+        let seconds = 0;
+        let isRunning = false;
+        let isPaused = false;
+        const maxTime = 600; // 10 minutes in seconds
+        let processLog = [];
+        let tickedActions = new Set();
+        let sectionCounters = {
+            ps1: 0,
+            chemical: 0,
+            tank: 0,
+            dialyzer: 0,
+            process: 0,
+            ps2: 0
+        };
+        let tankLevel = 0;
+        let pendingAction = null;
+
+        // Audio context for clock sound
+        let audioContext;
+        let clockSound = null;
+
+        function initializeAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                createClockSound();
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function createClockSound() {
+            if (!audioContext) return;
+            
+            clockSound = () => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            };
+        }
+
+        function playClockSound() {
+            if (clockSound && audioContext) {
+                clockSound();
+            }
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            const display = `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            document.getElementById('timerText').textContent = display;
+            
+            // Update circular fill
+            const percentage = (seconds / maxTime) * 360;
+            document.getElementById('timerFill').style.background = 
+                `conic-gradient(from 0deg, #32cd32 ${percentage}deg, transparent ${percentage}deg)`;
+        }
+
+        function toggleTimer() {
+            const startBtn = document.getElementById('startBtn');
+            const timerDisplay = document.getElementById('timerDisplay');
+            
+            if (!audioContext) {
+                initializeAudio();
+            }
+            
+            if (!isRunning && !isPaused) {
+                // Start new timer
+                startTimer();
+                startBtn.textContent = 'Stop';
+                timerDisplay.classList.add('timer-running');
+                logProcess('Timer started');
+            } else if (isRunning) {
+                // Stop timer
+                stopTimer();
+                startBtn.textContent = 'Start';
+                timerDisplay.classList.remove('timer-running');
+                logProcess('Timer stopped');
+            } else if (isPaused) {
+                // Resume timer
+                resumeTimer();
+                startBtn.textContent = 'Stop';
+                timerDisplay.classList.add('timer-running');
+                logProcess('Timer resumed');
+            }
+        }
+
+        function startTimer() {
+            isRunning = true;
+            isPaused = false;
+            showAllTickButtons();
+            timerInterval = setInterval(() => {
+                seconds++;
+                updateTimerDisplay();
+                playClockSound();
+                autoCompleteActions();
+                
+                if (seconds >= maxTime) {
+                    stopTimer();
+                    alert('Timer completed! 10 minutes elapsed.');
+                    logProcess('Timer completed - 10 minutes elapsed');
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            isPaused = false;
+            hideAllTickButtons();
+        }
+
+        function pauseTimer() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                isRunning = false;
+                isPaused = true;
+                document.getElementById('startBtn').textContent = 'Resume';
+                document.getElementById('timerDisplay').classList.remove('timer-running');
+                logProcess('Timer paused');
+            }
+        }
+
+        function resumeTimer() {
+            if (isPaused) {
+                startTimer();
+                document.getElementById('startBtn').textContent = 'Stop';
+                document.getElementById('timerDisplay').classList.add('timer-running');
+            }
+        }
+
+        function showResetConfirmation() {
+            pendingAction = 'reset';
+            document.getElementById('dialogTitle').textContent = 'Reset Timer';
+            document.getElementById('dialogMessage').textContent = 'Are you sure you want to reset the timer? This will stop the current session and reset all progress.';
+            document.getElementById('confirmationDialog').style.display = 'flex';
+        }
+
+        function resetTimer() {
+            stopTimer();
+            seconds = 0;
+            updateTimerDisplay();
+            document.getElementById('startBtn').textContent = 'Start';
+            document.getElementById('timerDisplay').classList.remove('timer-running');
+            resetAllTicks();
+            logProcess('Timer reset');
+        }
+
+        function showAllTickButtons() {
+            const tickButtons = document.querySelectorAll('.tick-button');
+            tickButtons.forEach((button, index) => {
+                setTimeout(() => {
+                    button.classList.add('visible');
+                }, index * 200); // Stagger the appearance
+            });
+        }
+
+        function hideAllTickButtons() {
+            const tickButtons = document.querySelectorAll('.tick-button');
+            tickButtons.forEach(button => {
+                button.classList.remove('visible');
+                button.classList.remove('ticked');
+            });
+        }
+
+        function resetAllTicks() {
+            const tickButtons = document.querySelectorAll('.tick-button');
+            const stationButtons = document.querySelectorAll('.station-button');
+            
+            tickButtons.forEach(button => {
+                button.classList.remove('visible');
+                button.classList.remove('ticked');
+            });
+            
+            stationButtons.forEach(button => {
+                button.classList.remove('completed');
+            });
+            
+            tickedActions.clear();
+            
+            // Reset counters
+            Object.keys(sectionCounters).forEach(key => {
+                sectionCounters[key] = 0;
+                const counter = document.getElementById(key + 'Counter');
+                if (counter) {
+                    counter.textContent = '0';
+                }
+            });
+            
+            // Reset tank level
+            tankLevel = 0;
+            document.getElementById('tankFill').style.height = '0%';
+        }
+
+        function autoCompleteActions() {
+            const totalActions = 10; // 5 actions per station
+            const actionsToComplete = Math.floor((seconds / maxTime) * totalActions);
+            const actionList = [
+                'bloodPortCheck1', 'rinse1', 'clean1', 'tbv1', 'affution1',
+                'bloodPortCheck2', 'rinse2', 'clean2', 'tbv2', 'affution2'
+            ];
+            
+            // Auto-complete actions based on timer progress
+            for (let i = 0; i < actionsToComplete; i++) {
+                const action = actionList[i];
+                if (!tickedActions.has(action)) {
+                    autoTickAction(action);
+                }
+            }
+        }
+
+        function autoTickAction(action) {
+            tickedActions.add(action);
+            
+            // Find the corresponding tick button and mark as ticked
+            const stationButton = document.querySelector(`[data-action="${action}"]`);
+            if (stationButton) {
+                const tickButton = stationButton.querySelector('.tick-button');
+                if (tickButton) {
+                    tickButton.classList.add('ticked');
+                    stationButton.classList.add('completed');
+                }
+            }
+            
+            // Increment relevant section counters
+            if (action.includes('blood') || action.includes('rinse') || action.includes('clean')) {
+                sectionCounters.chemical++;
+                document.getElementById('chemicalCounter').textContent = sectionCounters.chemical;
+            } else if (action.includes('tbv')) {
+                sectionCounters.process++;
+                document.getElementById('processCounter').textContent = sectionCounters.process;
+            } else if (action.includes('affution')) {
+                sectionCounters.dialyzer++;
+                document.getElementById('dialyzerCounter').textContent = sectionCounters.dialyzer;
+            }
+            
+            // Increase tank level
+            tankLevel = Math.min(tankLevel + 10, 100);
+            document.getElementById('tankFill').style.height = tankLevel + '%';
+            sectionCounters.tank = Math.floor(tankLevel / 10);
+            document.getElementById('tankCounter').textContent = sectionCounters.tank;
+            
+            logProcess(`Action auto-completed: ${action}`);
+        }
+
+        function toggleTick(tickButton, action) {
+            event.stopPropagation();
+            
+            // Manual toggle only works when timer is running
+            if (!isRunning) {
+                alert('Start the timer first to enable manual actions');
+                return;
+            }
+            
+            if (tickedActions.has(action)) {
+                // Untick
+                tickedActions.delete(action);
+                tickButton.classList.remove('ticked');
+                tickButton.parentElement.classList.remove('completed');
+                logProcess(`Action manually unchecked: ${action}`);
+            } else {
+                // Tick
+                tickedActions.add(action);
+                tickButton.classList.add('ticked');
+                tickButton.parentElement.classList.add('completed');
+                logProcess(`Action manually checked: ${action}`);                   
+            }     
+            updateSectionCounters(action);
+        }                         
+
+        function updateSectionCounters(action) {
+            if (action.includes('blood') || action.includes('rinse') || action.includes('clean')) {
+                sectionCounters.chemical++;
+                document.getElementById('chemicalCounter').textContent = sectionCounters.chemical;
+            } else if (action.includes('tbv')) {
+                sectionCounters.process++;
+                document.getElementById('processCounter').textContent = sectionCounters.process;
+            } else if (action.includes('affution')) {
+                sectionCounters.dialyzer++;
+                document.getElementById('dialyzerCounter').textContent = sectionCounters.dialyzer;
+            }
+        }
+        function accessSection(section) {
+            // Increment section counter
+            sectionCounters[section.toLowerCase().replace(' ', '')]++;
+            document.getElementById(section.toLowerCase().replace(' ', '') + 'Counter').textContent = sectionCounters[section.toLowerCase().replace(' ', '')];
+            
+            // Show tank level if accessing tank section
+            if (section === 'Tank Level') {
+                document.getElementById('tankFill').style.height = tankLevel + '%';
+            }
+            
+            logProcess(`Accessed section: ${section}`);
+        }
+        function logProcess(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            processLog.push(`[${timestamp}] ${message}`);
+            updateProcessLogDisplay();
+        }
+        function updateProcessLogDisplay() {
+            const processLogContainer = document.getElementById('printProcessLog');
+            processLogContainer.innerHTML = '';
+            processLog.forEach(log => {
+                const logItem = document.createElement('div');
+                logItem.textContent = log;
+                processLogContainer.appendChild(logItem);
+            });
+        }

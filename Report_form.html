@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dialyzer Reprocessing</title>
+  <style>
+    /* General layout */
+body {
+  background: #363838;
+  font-family: 'Courier New', Courier, monospace;
+  color: #333;
+  margin: 0;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Form container */
+.form-container {
+  background-color: #fff;
+  max-width: 600px;
+  width: 90%;
+  margin: auto;
+  padding: 25px 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Headings */
+.form-container h2 {
+  text-align: center;
+  font-size: 20px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  border-bottom: 1px dashed #aaa;
+  padding-bottom: 10px;
+}
+
+/* Form labels */
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+/* Inputs and selects */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="datetime-local"],
+select {
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Readonly fields */
+input[readonly] {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+/* Button style */
+button {
+  width: 100%;
+  background-color: #007BFF;
+  color: #fff;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Medium screens (tablets, 600px to 768px) */
+@media (max-width: 768px) {
+  .form-container {
+    padding: 20px;
+  }
+
+  input,
+  select {
+    font-size: 13px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
+/* Small screens (phones < 600px) */
+@media (max-width: 600px) {
+  .form-container {
+    padding: 15px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  input,
+  select {
+    font-size: 13px;
+    padding: 7px 8px;
+  }
+
+  label {
+    font-size: 13px;
+  }
+
+  button {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+/* Extra small screens (< 400px) */
+@media (max-width: 400px) {
+  .form-container {
+    padding: 10px;
+  }
+
+  h2 {
+    font-size: 16px;
+  }
+
+  button {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  label {
+    font-size: 12px;
+  }
+
+  input,
+  select {
+    font-size: 12px;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+<div class="form-container">
+  <h2>Dialyzer Reprocessing Form</h2>
+  <label>Date & Time</label>
+  <input type="datetime-local" id="dateTime">
+
+  <label>Station</label>
+  <select id="station">
+    <option value="">Select</option>
+    <option value="Station 1">Station 1</option>
+    <option value="Station 2">Station 2</option>
+  </select>
+  <label>Machine ID</label>
+  <input type="text" id="mechine" value="AMVIN-012-345" readonly>
+
+  <label>Dialyzer Type</label>
+  <select id="dialyzerType">
+    <option value="">Select</option>
+    <option value="F08">F08</option>
+    <option value="F06">F06</option>
+    <option value="Dora B-14P FBV(ml)85">Dora B-14P FBV(ml)85</option>
+    <option value="Nipro 130 LR FBV(ml)80">Nipro 130 LR FBV(ml)80</option>
+    <option value="Nipro 150 LR FBV(ml)95">Nipro 150 LR FBV(ml)95</option>
+    <option value="Nipro 170 LR FBV(ml)105">Nipro 170 LR FBV(ml)105</option>
+    <option value="Dora B-14 P FBV(ml)85">Dora B-14 P FBV(ml)85</option>
+    <option value="Nipro 130 LR FBV(ml) 80">Nipro 130 LR FBV(ml) 80</option>
+    <option value="Nipro 150 LR FBV(ml)95">Nipro 150 LR FBV(ml)95</option>
+    <option value="Nipro 170 LR FBV(ml) 105">Nipro 170 LR FBV(ml) 105</option>
+    <option value="Nipro-SUREFLUX07 FBV( ml) 45">Nipro-SUREFLUX07 FBV( ml) 45</option>
+    
+  </select>
+
+  <label>Fiber Bundle Volume (TBV)</label>
+  <input type="text" id="tbv" readonly>
+
+  <label>Pressure Leak Test</label>
+  <input type="text" id="pressureLeakTest" readonly>
+
+  <label>Blood Leak Test</label>
+  <input type="text" id="bloodLeakTest" value="NEGATIVE" readonly>
+
+  <label>Tech Name</label>
+  <input type="text" id="techName">
+
+  <label>Tech ID</label>
+  <input type="text" id="techID">
+
+  <label>Patient Name</label>
+  <input type="text" id="patientName">
+
+  <label>Patient ID</label>
+  <input type="text" id="patientID">
+
+  <label>Previous Uses</label>
+  <input type="number" id="previousUses">
+
+  <label>Reprocessing Number</label>
+  <input type="number" id="reprocessingNo">
+
+  <label>Storage Date</label>
+  <input type="date" id="storageDate">
+
+  <label>Next Due Date</label>
+  <input type="date" id="nextDueDate">
+
+  <label>Final Rinse</label>
+  <input type="text" id="finalRinse" value="Ready for Use" readonly>
+
+  <label>Storage Result</label>
+  <input type="text" id="storageResult" value="SUCCESSFUL" readonly>
+
+  <button onclick="printRecord()">Print</button>
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>

@@ -9,12 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const stationSelect = document.getElementById('station');
     const dialyzerSelect = document.getElementById('dialyzerType');
 
-    function updateDefaults() {
-      if (stationSelect.value && dialyzerSelect.value) {
-        document.getElementById('tbv').value = (Math.random() * (90 - 85) + 85).toFixed(1) + ' mL' + ' '+ '100%';
-        document.getElementById('pressureLeakTest').value = 'PASS';
-      }
-    }
+    // function updateDefaults() {
+    //   if (stationSelect.value && dialyzerSelect.value) {
+    //     document.getElementById('tbv').value = (Math.random() * (90 - 85) + 85).toFixed(1) + ' mL' + ' '+ '100%';
+    //     document.getElementById('pressureLeakTest').value = 'PASS';
+    //   }
+    // }
 
     stationSelect.addEventListener('change', updateDefaults);
     dialyzerSelect.addEventListener('change', updateDefaults);
@@ -83,3 +83,70 @@ Next Due:             ${data.nextDue}
   win.focus();
   win.print();
   }
+function saveAsPDF() {
+  const data = {
+    date: document.getElementById('storageDate').value,
+    time: document.getElementById('dateTime').value.split('T')[1],
+    station: document.getElementById('station').value,
+    mechine: document.getElementById('mechine').value,
+    techID: document.getElementById('techID').value,
+    techname: document.getElementById('techName').value,
+    patientID: document.getElementById('patientID').value,
+    patientName: document.getElementById('patientName').value.replace(/\s+/g, '_'),
+    dialyzer: document.getElementById('dialyzerType').value,
+    serial: document.getElementById('dialyzerType').value + "-" + Math.floor(Math.random() * 1000000),
+    uses: document.getElementById('previousUses').value,
+    tbv: document.getElementById('tbv').value,
+    pressure: document.getElementById('pressureLeakTest').value,
+    blood: document.getElementById('bloodLeakTest').value,
+    rinse: document.getElementById('finalRinse').value,
+    result: document.getElementById('storageResult').value,
+    reNo: document.getElementById('reprocessingNo').value,
+    nextDue: document.getElementById('nextDueDate').value
+  };
+
+  const receiptText = `
+Amvin Aqua Products
+----------------------------------------
+    Dialyzer Reprocessing Record
+----------------------------------------
+Date: ${data.date}      ${data.time}
+Station: ${data.station}
+Machine: ${data.mechine}
+Operator ID: ${data.techID}
+Operator Name: ${data.techname}
+Patient ID: ${data.patientID}
+Patient Name: ${data.patientName}
+Dialyzer Type: ${data.dialyzer}
+Serial Number: ${data.serial}
+----------------------------------------
+Processing Details:
+Previous Uses:        ${data.uses} ✓
+Fiber Bundle Volume:  ${data.tbv} ✓
+Pressure Leak Test:   ${data.pressure} ✓
+Blood Leak Test:      ${data.blood} ✓
+Final Rinse:          ${data.rinse} ✓
+Storage Result:       ${data.result} ✓
+Reprocessing #:       ${data.reNo}
+Storage Date:         ${data.date}
+Next Due:             ${data.nextDue}
+`;
+
+  const container = document.getElementById('receiptOutput');
+  container.innerText = receiptText;
+  container.style.visibility = 'visible';
+
+  const fileName = `Dialyzer_Receipt_${data.patientName}_${data.date}.pdf`;
+
+  const opt = {
+    margin: 0,
+    filename: fileName,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: [80, 150], orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(container).save().then(() => {
+    container.style.visibility = 'hidden';
+  });
+}

@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function printRecord() {
     const data = {
+      hospital: document.getElementById('hospital').value,
       date: document.getElementById('storageDate').value,
       time: document.getElementById('dateTime').value.split('T')[1],
       station: document.getElementById('station').value,
@@ -45,10 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const receipt = `
-        Amvin Aqua products
+      Amvin Aqua Products
 ----------------------------------------
         Dialyzer Reprocessing Record
 ----------------------------------------
+Hospital/Centre: ${data.hospital}
 Date: ${data.date}          ${data.time}
 Station: ${data.station}
 Machine: ${data.mechine}
@@ -94,7 +96,7 @@ function saveAsPDF() {
     patientID: document.getElementById('patientID').value,
     patientName: document.getElementById('patientName').value.replace(/\s+/g, '_'),
     dialyzer: document.getElementById('dialyzerType').value,
-    serial:  Math.floor(Math.random() * 1000000),
+    serial: document.getElementById('dialyzerType').value + "-" + Math.floor(Math.random() * 1000000),
     uses: document.getElementById('previousUses').value,
     tbv: document.getElementById('tbv').value,
     pressure: document.getElementById('pressureLeakTest').value,

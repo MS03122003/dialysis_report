@@ -192,11 +192,14 @@ button:hover {
   <label>Fiber Bundle Volume (TBV)</label>
   <input type="text" id="tbv">
 
+  <label>TBV in %</label>
+  <input type="text" id="percentage">
+
   <label>Pressure Leak Test</label>
   <input type="text" id="pressureLeakTest">
 
   <label>Blood Leak Test</label>
-  <input type="text" id="bloodLeakTest" value="NEGATIVE" readonly>
+  <input type="text" id="bloodLeakTest">
 
   <label>Tech Name</label>
   <input type="text" id="techName">
@@ -223,10 +226,10 @@ button:hover {
   <input type="date" id="nextDueDate">
 
   <label>Final Rinse</label>
-  <input type="text" id="finalRinse" value="Ready for Use" readonly>
+  <input type="text" id="finalRinse">
 
   <label>Storage Result</label>
-  <input type="text" id="storageResult" value="SUCCESSFUL" readonly>
+  <input type="text" id="storageResult">
 
   <button onclick="printRecord()">Print</button>
   <pre id="receiptOutput" style="display: none;"></pre>

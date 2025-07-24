@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
       time: document.getElementById('dateTime').value.split('T')[1],
       station: document.getElementById('station').value,
       mechine: document.getElementById('mechine').value,
+      percentage: document.getElementById('percentage').value + ' %',
       techID: document.getElementById('techID').value,
       techname: document.getElementById('techName').value,
       patientID: document.getElementById('patientID').value,
@@ -64,6 +65,7 @@ Serial Number: ${data.serial}
 Processing Details:
 Previous Uses:        ${data.uses} ✓
 Fiber Bundle Volume:  ${data.tbv} ✓
+TBV in %:             ${data.percentage} ✓
 Pressure Leak Test:   ${data.pressure} ✓
 Blood Leak Test:      ${data.blood} ✓
 Final Rinse:          ${data.rinse} ✓
@@ -90,6 +92,8 @@ function saveAsPDF() {
     date: document.getElementById('storageDate').value,
     time: document.getElementById('dateTime').value.split('T')[1],
     station: document.getElementById('station').value,
+    hospital: document.getElementById('hospital').value,
+    percentage: document.getElementById('percentage').value,
     mechine: document.getElementById('mechine').value,
     techID: document.getElementById('techID').value,
     techname: document.getElementById('techName').value,
@@ -107,12 +111,13 @@ function saveAsPDF() {
     nextDue: document.getElementById('nextDueDate').value
   };
 
-  const receiptText = `
-Amvin Aqua Products
+  const receipt = `
+      Amvin Aqua Products
 ----------------------------------------
-    Dialyzer Reprocessing Record
+        Dialyzer Reprocessing Record
 ----------------------------------------
-Date: ${data.date}      ${data.time}
+Hospital/Centre: ${data.hospital}
+Date: ${data.date}          ${data.time}
 Station: ${data.station}
 Machine: ${data.mechine}
 Operator ID: ${data.techID}
@@ -125,6 +130,7 @@ Serial Number: ${data.serial}
 Processing Details:
 Previous Uses:        ${data.uses} ✓
 Fiber Bundle Volume:  ${data.tbv} ✓
+TBV in %:            ${data.percentage} ✓
 Pressure Leak Test:   ${data.pressure} ✓
 Blood Leak Test:      ${data.blood} ✓
 Final Rinse:          ${data.rinse} ✓
@@ -133,7 +139,6 @@ Reprocessing #:       ${data.reNo}
 Storage Date:         ${data.date}
 Next Due:             ${data.nextDue}
 `;
-
   const container = document.getElementById('receiptOutput');
   container.innerText = receiptText;
   container.style.visibility = 'visible';

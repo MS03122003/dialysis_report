@@ -93,7 +93,6 @@ function printRecord() {
     };
 
     const receipt = `
-      Amvin Aqua Products
 ----------------------------------------
         Dialyzer Reprocessing Record
 ----------------------------------------
@@ -159,7 +158,6 @@ function saveAsPDF() {
     };
 
     const receipt = `
-      Amvin Aqua Products
 ----------------------------------------
         Dialyzer Reprocessing Record
 ----------------------------------------
